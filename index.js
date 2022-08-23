@@ -34,7 +34,7 @@ gameStatus.innerHTML = currentPlayerTurn();
 startGame();
 
 resetButton.addEventListener('click', startGame);
-
+gameActive = true;
 
 function startGame() {
     gameActive = true;
@@ -65,10 +65,11 @@ function squareClick(e) {
 
 function endGameMessage() {
     if (draw) {
-        draw.innerHTML = "It's a draw!";
+        alert("It's a draw!");
     } else {
-        win.innerHTML = '${currentPlayer} wins!';
+        alert('${currentPlayer} wins!');
     }
+
 }
 
 function placePiece (clickedSquare, clickedSquareIndex) {
@@ -84,7 +85,7 @@ function takeTurns () {
 function isDraw() {
 	return [...squareElements].every(square => {
 		return square.classList.contains(playerX) || square.classList.contains(playerO);
-	})
+	});
 }
 
 function checkWin(currentPlayer) {
