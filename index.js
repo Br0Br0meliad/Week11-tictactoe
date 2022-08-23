@@ -1,6 +1,16 @@
 
+const playerX = "X";
+const playerO = "O";
 
-const WINNING_COMBINATIONS = [
+const squareElements = document.querySelectorAll('[data-cell-index]');
+
+let gameActive = true;
+
+let currentPlayer = "X";
+
+let boardState = ["", "", "", "", "", "", "", "", ""];
+
+const winningCombos = [
 	[0, 1, 2],
 	[3, 4, 5],
 	[6, 7, 8],
@@ -21,19 +31,71 @@ gameStatus.innerHTML = currentPlayerTurn();
 
 
 
-startGame()
+startGame();
 
-resetButton.addEventListener('click', startGame)
+resetButton.addEventListener('click', startGame);
 
 
 function startGame() {
     gameActive = true;
     currentPlayer = "X";
-    gameState = ["", "", "", "", "", "", "", "", ""];
-    statusDisplay.innerHTML = currentPlayerTurn();
+    boardState = ["", "", "", "", "", "", "", "", ""];
+    gameStatus.innerHTML = currentPlayerTurn();
     document.querySelectorAll('.square')
                .forEach(square => square.innerHTML = "");
-    square.removeEventListener('click', squareClick);
-    square.addEventListener('click', squareClick, {once: true});
 };
 
+function squareClick(e) {
+    const square = e.target;
+    const clickedSquareIndex = parseInt(
+        square.getAttribute('data-cell-index')
+    );
+    if (boardState[clickedSquareIndex] !== "" || !gameActive) {
+        return;
+    }
+    placePiece (square, currentPlayer);
+        if(checkWin(currentPlayer)) {
+            endGameMessage(false);
+        } else if (isDraw()) {
+            endGameMessage(true);
+        } else {
+            takeTurns();
+        }
+}
+
+function endGameMessage() {
+    if (draw) {
+        draw.innerHTML = "It's a draw!";
+    } else {
+        win.innerHTML = '${currentPlayer} wins!';
+    }
+}
+
+function placePiece (clickedSquare, clickedSquareIndex) {
+    boardState[clickedSquareIndex] = currentPlayer;
+    clickedSquare.innerHTML = currentPlayer;
+}
+
+function takeTurns () {
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+    gameStatus.innerHTML = currentPlayerTurn();
+}
+
+function isDraw() {
+	return [...squareElements].every(square => {
+		return square.classList.contains(playerX) || square.classList.contains(playerO);
+	})
+}
+
+function checkWin(currentPlayer) {
+	return winningCombos.some(combination => {
+		return combination.every(index => {
+			return squareElements[index].classList.contains(currentPlayer);
+		})
+	})
+}
+
+let squares = document.querySelectorAll(".square");
+squares.forEach((square)=>{
+    square.addEventListener('click', squareClick);
+});
